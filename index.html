@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Corner Hustle 2</title>
+<style>
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #111;
+  color: #eee;
+  text-align: center;
+}
+#game {
+  max-width: 800px;
+  margin: auto;
+  padding: 20px;
+}
+h1 { font-size: 2.5em; color: #f00; text-shadow: 2px 2px #000; }
+.stats { margin: 10px 0; padding: 10px; background: #222; border-radius: 8px; }
+.choices button {
+  display: block; width: 100%; margin: 10px 0; padding: 15px; font-size: 1.2em;
+  background: #333; color: #fff; border: none; border-radius: 10px; cursor: pointer; transition: 0.3s;
+}
+.choices button:hover { background: #555; }
+#bg { width: 100%; border-radius: 12px; margin-bottom: 15px; transition: opacity 0.5s ease-in-out; }
+#startBtn { margin-top: 20px; padding: 20px; font-size: 1.5em; cursor: pointer; background: #f00; border: none; border-radius: 12px; color: #fff; }
+#startBtn:hover { background: #c00; }
+</style>
+</head>
+<body>
+<div id="game">
+  <h1>Corner Hustle 2</h1>
+  <p><i>Created by Stoned Wolf Genetics</i></p>
+  <img id="bg" src="https://i.ibb.co/R2BvST2/detroit-scene.jpg" alt="Scene">
+  <div class="stats" id="stats"></div>
+  <div id="text"></div>
+  <div class="choices" id="choices"></div>
+  <button id="startBtn">Click to Start Game & Play Music</button>
+</div>
+
+<audio id="bgMusic" loop>
+  <source src="music/background.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+// GAME STATE
+let stats = { money: 50, heat: 1, rep: 2, weed: 1, gun: "Glock19", ammo: 15 };
+const music = document.getElementById("bgMusic");
+const startBtn = document.getElementById("startBtn");
+const bg = document.getElementById("bg");
+
+startBtn.addEventListener("click", () => {
+  music.play();
+  startBtn.style.display = "none";
+  startGame();
+});
+
+function updateStats() {
+  document.getElementById("stats").innerText =
+    `💵 $${stats.money} | 🔥 Heat ${stats.heat} | ⭐ Rep ${stats.rep} | 🌿 Weed ${stats.weed} lb | 🔫 ${stats.gun} | 📦 Ammo ${stats.ammo}`;
+}
+
+function showText(t) { document.getElementById("text").innerHTML = "<p>" + t + "</p>"; }
+
+function showChoices(options) {
+  const div = document.getElementById("choices");
+  div.innerHTML = "";
+  options.forEach(o => {
+    let b = document.createElement("button");
+    b.type = "button";
+    b.innerText = o.text;
+    b.addEventListener("click", e => {
+      e.preventDefault();
+      if(o.bgImage) changeBackground(o.bgImage);
+      o.action();
+    });
+    div.appendChild(b);
+  });
+}
+
+function changeBackground(url) {
+  bg.style.opacity = 0;
+  setTimeout(() => { bg.src = url; bg.style.opacity = 1; }, 250);
+}
+
+// SCENES
+function startGame() {
+  updateStats();
+  showText("The game continues. After surviving your first hustle in Chicago, you’re now in Detroit—Motor City, where blocks hit harder and cops hit faster. Bass shakes the street, smoke hangs in the air, and your stash feels heavy. The grind is alive, but so is the danger.<br><br>What’s your first play?");
+  showChoices([
+    { text: "[1] Answer a text from a buyer waiting outside", action: buyerScene, bgImage: "https://i.ibb.co/album-placeholder/alley.jpg" },
+    { text: "[2] Post up by the liquor store and catch traffic", action: liquorScene, bgImage: "https://i.ibb.co/album-placeholder/liquor.jpg" },
+    { text: "[3] Link with a Detroit crew for bigger moves", action: crewScene, bgImage: "https://i.ibb.co/album-placeholder/warehouse.jpg" },
+    { text: "[4] BONUS: Attempt to rob a dispensary (d20 roll)", action: dispoRobbery, bgImage: "https://i.ibb.co/album-placeholder/dispensary.jpg" }
+  ]);
+}
+
+function buyerScene() {
+  stats.money += 100;
+  stats.rep += 1;
+  updateStats();
+  showText("You meet the buyer in a dark alley. Quick exchange, no cops, clean deal. Your pockets feel heavier.");
+  showChoices([{ text: "Next Move", action: startGame, bgImage: "https://i.ibb.co/R2BvST2/detroit-scene.jpg" }]);
+}
+
+function liquorScene() {
+  stats.money += 50;
+  stats.heat += 1;
+  updateStats();
+  showText("You post up outside the liquor store. A few fiends roll through, cash in hand. Cops cruise by, eyes sharp.");
+  showChoices([{ text: "Next Move", action: startGame, bgImage: "https://i.ibb.co/R2BvST2/detroit-scene.jpg" }]);
+}
+
+function crewScene() {
+  stats.rep += 2;
+  stats.heat += 2;
+  updateStats();
+  showText("You link with a Detroit crew in a dusty warehouse. They size you up, then hand you a burner phone. Bigger plays mean bigger risks.");
+  showChoices([{ text: "Next Move", action: startGame, bgImage: "https://i.ibb.co/R2BvST2/detroit-scene.jpg" }]);
+}
+
+function dispoRobbery() {
+  let roll = Math.floor(Math.random() * 20) + 1;
+  if (roll > 10) {
+    stats.money += 500;
+    stats.weed += 2;
+    stats.rep += 2;
+    updateStats();
+    showText("🎲 You rolled " + roll + "! SUCCESS. You hit the dispo hard and escape with cash and weed. Heat is rising though...");
+  } else {
+    stats.heat += 5;
+    stats.ammo -= 3;
+    updateStats();
+    showText("🎲 You rolled " + roll + "... FAILURE. Security pulls out heavy guns, shots fired. You barely escape, heat all over you.");
+  }
+  showChoices([{ text: "Next Move", action: startGame, bgImage: "https://i.ibb.co/R2BvST2/detroit-scene.jpg" }]);
+}
+</script>
+</body>
+</html>
